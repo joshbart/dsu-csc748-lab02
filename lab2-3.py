@@ -15,20 +15,18 @@ if __name__ == "__main__":
     shellcode = asm(shellcraft.amd64.linux.sh())
 
 
-    # To solve this challenge, I start by looking at the lab2-2.c file.
-    # The "void nothing_to_see_here()" function must be where the exploit is.
-    # In "int main()", the gets instruction is used with a 128-byte buffer.
-    # This is where I will push the shellcode onto the stack.
+    # # To solve this challenge, I start by looking at the lab2-2.c file.
+    # # The "void nothing_to_see_here()" function must be where the exploit is.
+    # # In "int main()", the gets instruction is used with a 128-byte buffer.
+    # # This is where I will push the shellcode onto the stack.
 
-    # I take a look at the binary using ropper.
-    # At 0x401259, there are the right bytes to "call rsp".
-    # objdump confirms this address is within the "nothing_to_see_here" function.
-    # Specifically, the hex is 0xd4ff.
-    # I add this address as a variable for later use.
+    # # I take a look at the binary using ropper.
+    # # At 0x401259, there are the right bytes to "call rsp".
+    # # objdump confirms this address is within the "nothing_to_see_here" function.
+    # # Specifically, the hex is 0xd4ff.
+    # # I add this address as a variable for later use.
 
-    call_rsp_address = 0x401259
-
-    # Now that I have the place to inject code, 
+    # call_rsp_address = 0x401259
 
     #### EXPLOITATION ####
     
